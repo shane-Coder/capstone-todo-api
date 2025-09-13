@@ -1,16 +1,17 @@
-# Go CRUD API with Docker & SQLite
+# Go CRUD API with Docker & PostgreSQL
 
-A simple, robust, and containerized RESTful API for managing a to-do list, built with standard library Go and SQLite. This project serves as a practical demonstration of backend development fundamentals, including API design, database integration, and containerization with Docker.
+A professional, containerized RESTful API for managing a to-do list, built with standard library Go and a PostgreSQL database. This project is designed to showcase best practices in backend development, including a clean project structure, a multi-service Docker setup with Docker Compose, and a production-ready multi-stage Dockerfile.
 
 ---
 
 ## Features
 
 - **Full CRUD Functionality**: Create, Read, Update, and Delete to-do items.
-- **Persistent Storage**: Data is saved in a local SQLite database, ensuring it persists across server restarts.
+- **Robust Database**: Uses a networked PostgreSQL database for persistent, scalable storage.
 - **RESTful API Design**: Follows standard REST principles for predictable and clean endpoints.
-- **Containerized**: Fully containerized with a multi-stage `Dockerfile` for easy and reproducible deployment.
-- **Professional Configuration**: Manages configuration (like the port) via environment variables.
+- **Fully Containerized**: A multi-stage `Dockerfile` creates a tiny, secure, static binary.
+- **Local Development with Docker Compose**: Includes a `docker-compose.yml` for a one-command local development setup.
+- **Production-Ready**: Connects to a cloud database via environment variables for easy deployment.
 
 ---
 
@@ -18,42 +19,31 @@ A simple, robust, and containerized RESTful API for managing a to-do list, built
 
 Before you begin, ensure you have the following installed:
 - [Go](https://go.dev/doc/install) (Version 1.24.6 or later)
-- [Docker](https://docs.docker.com/get-docker/)
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
 
 ---
 
 ## 🚀 Running the Application
 
-There are two ways to run this project: locally with Go, or inside a Docker container.
+### Running with Docker Compose (Recommended for Local Development)
 
-### 1. Running with Docker (Recommended)
+This is the easiest way to run the entire application stack (API + Database) on your local machine.
 
-This is the easiest and most reliable way to run the application.
-
-1.  **Build the Docker image:**
+1.  **Start the services:**
     ```bash
-    docker build -t todo-api .
+    docker-compose up --build
     ```
+    This command will build your Go API image, pull the PostgreSQL image, and start both containers.
 
-2.  **Run the Docker container:**
-    ```bash
-    docker run -p 8888:8888 todo-api
-    ```
-The API will be available at `http://localhost:8888`.
+2.  **Access the API:**
+    The API will be available at `http://localhost:8888`.
 
-### 2. Running Locally with Go
+3.  **To stop the services:**
+    Press `Ctrl + C` in the terminal.
 
-1.  **Create an environment file:**
-    Create a file named `.env` in the root of the project and add the port number:
-    ```
-    PORT=8888
-    ```
+### Running Manually for Production (e.g., on Render)
 
-2.  **Run the server:**
-    ```bash
-    go run main.go
-    ```
-The API will be available at `http://localhost:8888`.
+The `Dockerfile` is optimized for production deployment. A cloud provider like Render will use it to build and run your API, which will connect to a managed cloud database via the `DATABASE_URL` environment variable.
 
 ---
 
@@ -65,34 +55,22 @@ The base URL for all endpoints is `http://localhost:8888`.
 
 - **Method**: `GET`
 - **Endpoint**: `/todos`
-- **Description**: Retrieves a list of all to-do items.
-- **`curl` Example**:
-  ```bash
-  curl http://localhost:8888/todos
+- **`curl` Example**: `curl http://localhost:8888/todos`
 
 ### Create a New To-Do Item
 
 - **Method**: `POST`
 - **Endpoint**: `/todos`
-- **Description**: Adds a new to-do item to the database.
-- **`curl` Example**:
-  ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"task":"Learn Docker", "completed":false}' http://localhost:8888/todos
-  
+- **`curl` Example**: `curl -X POST -H "Content-Type: application/json" -d '{"task":"Deploy to the cloud", "completed":false}' http://localhost:8888/todos`
+
 ### Update an Existing To-Do Item
 
 - **Method**: `PUT`
 - **Endpoint**: `/todos/{id}`
-- **Description**: Updates the task and completed status of an existing to-do item.
-- **`curl` Example**:
-  ```bash
-  curl -X PUT -H "Content-Type: application/json" -d '{"task":"Master Docker", "completed":true}' http://localhost:8888/todos/1
- 
+- **`curl` Example**: `curl -X PUT -H "Content-Type: application/json" -d '{"task":"Deploy to the cloud", "completed":true}' http://localhost:8888/todos/1`
+
 ### Delete a To-Do Item
 
 - **Method**: `DELETE`
 - **Endpoint**: `/todos/{id}`
-- **Description**: Removes a to-do item from the database.
-- **`curl` Example**:
-  ```bash  
-    curl -X DELETE http://localhost:8888/todos/1
+- **`curl` Example**: `curl -X DELETE http://localhost:8888/todos/1`

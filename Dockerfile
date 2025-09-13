@@ -1,26 +1,24 @@
+# Dockerfile
+
 # Stage 1: The build environment
 FROM golang:1.24.6-alpine AS builder
 
-# Install the C compiler (gcc) needed to build CGO packages
-RUN apk add --no-cache gcc musl-dev
+# Install Git, which is needed to fetch Go modules
+RUN apk add --no-cache git
 
-# Set the working directory
 WORKDIR /app
 
-# Copy module files and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the rest of the application source code
 COPY . .
 
-# Build the Go application, allowing CGO this time
-RUN go build -o /server
-
+# Build a static, CGO-disabled binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server
 
 # Stage 2: The final, production-ready container
-# Use Alpine as the base image because it contains the C libraries our app needs
-FROM alpine:latest
+# Use a minimal 'scratch' image for a tiny and secure final image
+FROM scratch
 
 # Copy the compiled server binary from the 'builder' stage
 COPY --from=builder /server /server

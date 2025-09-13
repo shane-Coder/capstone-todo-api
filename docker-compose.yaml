@@ -1,0 +1,33 @@
+# docker-compose.yml
+services:
+  # The PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Our Go API Service
+  api:
+    # Build the image from the Dockerfile in the current directory
+    build: .
+    restart: always
+    ports:
+      - "8888:8888"
+    # Depends on the 'db' service, so 'db' will start first
+    depends_on:
+      - db
+    environment:
+      # Use the connection string for the 'db' service
+      - DATABASE_URL=postgres://myuser:mypassword@db:5432/mydb
+      - PORT=8888
+
+# A named volume to persist our database data
+volumes:
+  postgres_data:
