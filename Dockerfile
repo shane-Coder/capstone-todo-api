@@ -25,11 +25,6 @@ FROM alpine:latest
 # Copy the compiled server binary from the 'builder' stage
 COPY --from=builder /server /server
 
-# Copy the database file into the container
-# NOTE: In a real-world app, the database would live outside the container.
-# This is fine for our learning project.
-COPY todos.db /todos.db
-
 # Tell Docker which port the container will listen on
 EXPOSE 8888
 

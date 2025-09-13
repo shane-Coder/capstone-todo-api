@@ -23,17 +23,23 @@ type Server struct {
 	db *sql.DB
 }
 
+// NewServer creates a new Server instance and initializes the database.
 func NewServer() *Server {
-	db, err := sql.Open("sqlite3", "./todos.db")
+	dbPath := os.Getenv("DATABASE_PATH")
+	if dbPath == "" {
+		dbPath = "./todos.db" // Default to local file if not set
+	}
+
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		panic(err)
 	}
 
 	createTableSQL := `CREATE TABLE IF NOT EXISTS todos (
-		"id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"task" TEXT,
-		"completed" BOOLEAN
-	);`
+        "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        "task" TEXT,
+        "completed" BOOLEAN
+    );`
 	if _, err := db.Exec(createTableSQL); err != nil {
 		panic(err)
 	}
