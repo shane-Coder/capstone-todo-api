@@ -1,0 +1,5 @@
+# Environment variables
+.env
+
+# Compiled binary
+capstone-todo-api
