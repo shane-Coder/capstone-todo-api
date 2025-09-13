@@ -51,6 +51,16 @@ func NewServer() *Server {
 
 // --- Handlers (Updated for PostgreSQL) ---
 
+// Add this new handler function with the others
+func (s *Server) rootHandler(w http.ResponseWriter, r *http.Request) {
+	// If the path is not exactly "/", then it's a 404
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	fmt.Fprintf(w, "Welcome to the Go To-Do API!")
+}
+
 func (s *Server) getTodosHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := s.db.Query(context.Background(), "SELECT id, task, completed FROM todos ORDER BY id")
 	if err != nil {
@@ -158,6 +168,7 @@ func (s *Server) todosRouter(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	server := NewServer()
+	http.HandleFunc("/", server.rootHandler) // Handle the root path
 	http.HandleFunc("/todos/", server.todosRouter)
 
 	port := os.Getenv("PORT")
